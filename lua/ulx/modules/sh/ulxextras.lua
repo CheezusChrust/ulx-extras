@@ -71,7 +71,7 @@ setspawn:defaultAccess(ULib.ACCESS_ALL)
 setspawn:help("Sets a player's spawn position")
 setspawn:setOpposite("ulx resetspawn", {_, _, true}, "!resetspawn")
 
-hook.Add("PlayerSpawn", "ULX::AvtoExtras::SetSpawn", function(ply)
+hook.Add("PlayerSpawn", "ULX_AvtoExtras_SetSpawn", function(ply)
     if ply.ulxSpawnPos then
         ply:SetPos(ply.ulxSpawnPos)
     end
@@ -157,11 +157,11 @@ freezeall:help("Freezes all of your own props")
 -- Enters the last vehicle the player was in
 local lastVehicles = {}
 
-hook.Add("PlayerEnteredVehicle", "ULX::AvtoExtras::SaveVehicle", function(ply, vehicle)
+hook.Add("PlayerEnteredVehicle", "ULX_AvtoExtras_SaveVehicle", function(ply, vehicle)
     lastVehicles[ply] = vehicle
 end)
 
-hook.Add("PlayerDisconnected", "ULX::AvtoExtras::SaveVehicleCleanup", function(ply)
+hook.Add("PlayerDisconnected", "ULX_AvtoExtras_SaveVehicleCleanup", function(ply)
     lastVehicles[ply] = nil
 end)
 
@@ -180,3 +180,107 @@ end
 local backseat = ulx.command("Utility", "ulx backseat", ulx.backseat, "!backseat")
 backseat:defaultAccess(ULib.ACCESS_ALL)
 backseat:help("Enters the last vehicle you were in")
+
+
+-- Save locations and allow players to teleport to them
+local locations = {}
+local map = game.GetMap()
+
+if not file.Exists("ulx_extras/locations.txt", "DATA") then
+    file.CreateDir("ulx_extras")
+    file.Write("ulx_extras/locations.txt", util.TableToJSON({}))
+else
+    locations = util.JSONToTable(file.Read("ulx_extras/locations.txt", "DATA") or "") or {}
+end
+
+-- Adds a location for the current map
+function ulx.locadd(callingPly, name)
+    name = string.lower(name)
+
+    if not IsValid(callingPly) then
+        ULib.tsayError(callingPly, "You cannot add locations from the console!", true)
+
+        return
+    end
+
+    if not name:match("^%w+$") then
+        ULib.tsayError(callingPly, "Location name can only contain letters, numbers, and underscores!", true)
+
+        return
+    end
+
+    locations[map] = locations[map] or {}
+    locations[map][name] = callingPly:GetPos()
+
+    file.Write("ulx_extras/locations.txt", util.TableToJSON(locations, true))
+
+    ulx.fancyLogAdmin(callingPly, "#A added location #s", name)
+end
+
+local locadd = ulx.command("Teleport", "ulx locadd", ulx.locadd, "!locadd")
+locadd:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
+locadd:defaultAccess(ULib.ACCESS_ADMIN)
+
+-- Deletes a location for the current map
+function ulx.locdel(callingPly, name)
+    name = string.lower(name)
+
+    if not locations[map] or not locations[map][name] then
+        ULib.tsayError(callingPly, "Location not found!", true)
+
+        return
+    end
+
+    locations[map][name] = nil
+
+    if not next(locations[map]) then
+        locations[map] = nil
+    end
+
+    file.Write("ulx_extras/locations.txt", util.TableToJSON(locations, true))
+
+    ulx.fancyLogAdmin(callingPly, "#A deleted location #s", name)
+end
+
+local locdel = ulx.command("Teleport", "ulx locdel", ulx.locdel, "!locdel")
+locdel:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
+locdel:defaultAccess(ULib.ACCESS_ADMIN)
+
+-- Lists all locations for the current map
+function ulx.loclist(callingPly)
+    if not locations[map] or not next(locations[map]) then
+        ULib.tsay(callingPly, "No locations have been added for this map yet!")
+
+        return
+    end
+
+    local locationNames = {}
+
+    for name in pairs(locations[map]) do
+        table.insert(locationNames, name)
+    end
+
+    ULib.tsay(callingPly, "Locations for this map:\n" .. table.concat(locationNames, "\n"))
+end
+
+local loclist = ulx.command("Teleport", "ulx loclist", ulx.loclist, "!loclist")
+loclist:defaultAccess(ULib.ACCESS_ALL)
+
+-- Teleports to a saved location
+function ulx.lgo(callingPly, name)
+    name = string.lower(name)
+
+    if not locations[map] or not locations[map][name] then
+        ULib.tsayError(callingPly, "Location not found!", true)
+
+        return
+    end
+
+    callingPly:SetPos(locations[map][name])
+
+    ulx.fancyLogAdmin(callingPly, "#A teleported to location #s", name)
+end
+
+local lgo = ulx.command("Teleport", "ulx lgo", ulx.lgo, "!lgo")
+lgo:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
+lgo:defaultAccess(ULib.ACCESS_ALL)
