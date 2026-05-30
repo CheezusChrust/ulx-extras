@@ -19,7 +19,7 @@ end
 local revive = ulx.command("Utility", "ulx revive", ulx.revive, "!revive")
 revive:addParam({type = ULib.cmds.PlayerArg, ULib.cmds.optional})
 revive:defaultAccess(ULib.ACCESS_ALL)
-revive:help("Revives a player")
+revive:help("Revives a player.")
 
 
 -- Cleans up a player's props
@@ -38,7 +38,7 @@ end
 local clean = ulx.command("Utility", "ulx cleanup", ulx.cleanup, "!cleanup")
 clean:addParam({type = ULib.cmds.PlayerArg})
 clean:defaultAccess(ULib.ACCESS_ADMIN)
-clean:help("Cleans up a player's props")
+clean:help("Cleans up a player's props.")
 
 
 -- Sets a player's spawn position
@@ -68,7 +68,7 @@ local setspawn = ulx.command("Utility", "ulx setspawn", ulx.setspawn, "!setspawn
 setspawn:addParam({type = ULib.cmds.PlayerArg, ULib.cmds.optional})
 setspawn:addParam({type = ULib.cmds.BoolArg, invisible = true})
 setspawn:defaultAccess(ULib.ACCESS_ALL)
-setspawn:help("Sets a player's spawn position")
+setspawn:help("Sets a player's spawn position.")
 setspawn:setOpposite("ulx resetspawn", {_, _, true}, "!resetspawn")
 
 hook.Add("PlayerSpawn", "ULX_AvtoExtras_SetSpawn", function(ply)
@@ -89,7 +89,7 @@ end
 
 local decals = ulx.command("Utility", "ulx decals", ulx.decals, "!decals")
 decals:defaultAccess(ULib.ACCESS_ADMIN)
-decals:help("Clears all decals")
+decals:help("Clears all decals.")
 
 
 -- Freezes all props, optionally a target's props instead of all props
@@ -114,7 +114,7 @@ end
 
 local freezemap = ulx.command("Utility", "ulx freezemap", ulx.freezemap, "!freezemap")
 freezemap:defaultAccess(ULib.ACCESS_ADMIN)
-freezemap:help("Freezes all entities on the map")
+freezemap:help("Freezes all entities on the map.")
 
 
 -- Freeze a specific player's props
@@ -133,7 +133,7 @@ end
 local freezeallof = ulx.command("Utility", "ulx freezeallof", ulx.freezeallof, "!freezeallof")
 freezeallof:addParam({type = ULib.cmds.PlayerArg})
 freezeallof:defaultAccess(ULib.ACCESS_ADMIN)
-freezeallof:help("Freezes all of a specific player's props")
+freezeallof:help("Freezes all of a specific player's props.")
 
 
 -- Freezes the caller's props
@@ -151,7 +151,7 @@ end
 
 local freezeall = ulx.command("Utility", "ulx freezeall", ulx.freezeall, "!freezeall")
 freezeall:defaultAccess(ULib.ACCESS_ALL)
-freezeall:help("Freezes all of your own props")
+freezeall:help("Freezes all of your own props.")
 
 
 -- Enters the last vehicle the player was in
@@ -179,7 +179,7 @@ end
 
 local backseat = ulx.command("Utility", "ulx backseat", ulx.backseat, "!backseat")
 backseat:defaultAccess(ULib.ACCESS_ALL)
-backseat:help("Enters the last vehicle you were in")
+backseat:help("Enters the last vehicle you were in.")
 
 
 -- Save locations and allow players to teleport to them
@@ -220,6 +220,7 @@ end
 local locadd = ulx.command("Teleport", "ulx locadd", ulx.locadd, "!locadd")
 locadd:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
 locadd:defaultAccess(ULib.ACCESS_ADMIN)
+locadd:help("Adds a location on the current map that players can teleport to.")
 
 -- Deletes a location for the current map
 function ulx.locdel(callingPly, name)
@@ -245,6 +246,7 @@ end
 local locdel = ulx.command("Teleport", "ulx locdel", ulx.locdel, "!locdel")
 locdel:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
 locdel:defaultAccess(ULib.ACCESS_ADMIN)
+locdel:help("Deletes a location on the current map.")
 
 -- Lists all locations for the current map
 function ulx.loclist(callingPly)
@@ -265,6 +267,7 @@ end
 
 local loclist = ulx.command("Teleport", "ulx loclist", ulx.loclist, "!loclist")
 loclist:defaultAccess(ULib.ACCESS_ALL)
+loclist:help("Lists all saved locations for the current map.")
 
 -- Teleports to a saved location
 function ulx.lgo(callingPly, name)
@@ -290,3 +293,4 @@ end
 local lgo = ulx.command("Teleport", "ulx lgo", ulx.lgo, "!lgo")
 lgo:addParam({type = ULib.cmds.StringArg, hint = "Location Name"})
 lgo:defaultAccess(ULib.ACCESS_ALL)
+lgo:help("Teleports to a saved location on the current map.")
