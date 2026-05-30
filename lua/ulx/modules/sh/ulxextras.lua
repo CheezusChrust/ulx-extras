@@ -249,7 +249,7 @@ locdel:defaultAccess(ULib.ACCESS_ADMIN)
 -- Lists all locations for the current map
 function ulx.loclist(callingPly)
     if not locations[map] or not next(locations[map]) then
-        ULib.tsay(callingPly, "No locations have been added for this map yet!")
+        ULib.tsay(callingPly, "No locations have been added for " .. map .. " yet!")
 
         return
     end
@@ -260,7 +260,7 @@ function ulx.loclist(callingPly)
         table.insert(locationNames, name)
     end
 
-    ULib.tsay(callingPly, "Locations for this map:\n" .. table.concat(locationNames, "\n"))
+    ULib.tsay(callingPly, "Locations for " .. map .. ":\n" .. table.concat(locationNames, "\n"))
 end
 
 local loclist = ulx.command("Teleport", "ulx loclist", ulx.loclist, "!loclist")
@@ -268,6 +268,12 @@ loclist:defaultAccess(ULib.ACCESS_ALL)
 
 -- Teleports to a saved location
 function ulx.lgo(callingPly, name)
+    if not IsValid(callingPly) then
+        ULib.tsayError(callingPly, "You cannot teleport to locations from the console!", true)
+
+        return
+    end
+
     name = string.lower(name)
 
     if not locations[map] or not locations[map][name] then
